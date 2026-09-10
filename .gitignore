@@ -1,0 +1,21 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Kubernetes / Minikube binaries
+k8s/kubectl
+k8s/minikube-linux-amd64
+
+# SSH / private keys
+*.pem
+*.key
+
+# Environment / secrets
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
