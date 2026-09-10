@@ -1,16 +1,38 @@
 name: DevOps CI/CD Pipeline
+
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-    - name: Build Docker Image
-      run: docker build -t devops-lab-app .
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f k8s/deployment.yml
-        kubectl apply -f k8s/service.yml
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t devops-lab-app:latest .
+
+      - name: Setup Kubernetes
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: devops-cluster
+
+      - name: Load Docker image into Kubernetes
+        run: |
+          kind load docker-image devops-lab-app:latest --name devops-cluster
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yml
+          kubectl apply -f k8s/service.yml
+
+      - name: Verify Kubernetes Deployment
+        run: |
+          kubectl get nodes
+          kubectl get pods
+          kubectl get services
